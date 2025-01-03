@@ -3,15 +3,11 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Foundation\Validation\ValidatesRequests;
-use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
 
-class Controller extends BaseController
+class ResponseController extends Controller
 {
-    use AuthorizesRequests, ValidatesRequests;
-
-     /**
+    /**
      * success response method.
      */
     public function sendSuccessResponse($result, $message, $code){
