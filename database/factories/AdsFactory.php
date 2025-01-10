@@ -17,7 +17,13 @@ class AdsFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'user_id' => fake()->numberBetween(1, 5),
+            'title' => fake()->text(20),
+            'description' => fake()->text(),
+            'category_id' => fake()->numberBetween(1, 5),
+            'location' => fake()->city(),
+            'price' => fake()->numberBetween(2, 6),
+            'is_active' => fake()->boolean(70),
         ];
     }
 }
