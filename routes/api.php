@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Ads\AdsController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\CategoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -31,4 +32,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1/ads')->group(function () {
     Route::post('/new', [AdsController::class, 'createAds']);
     Route::put('/{id}', [AdsController::class, 'updateAd']);
     Route::delete('/{id}', [AdsController::class, 'deleteAd']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('v1/category')->group(function () {
+    Route::get('/', [CategoryController::class, 'showAllCategory']);
+    Route::post('/new', [CategoryController::class, 'createCategory']);
+    Route::put('/{id}', [CategoryController::class, 'updateCategory']);
 });
