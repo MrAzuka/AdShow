@@ -1,66 +1,74 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Image;
 
+use cloudinary;
 use App\Models\Image;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreImageRequest;
 use App\Http\Requests\UpdateImageRequest;
+use Illuminate\Support\Facades\Validator;
 
 class ImageController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Upload Image to store
      */
-    public function index()
+    public function createImage(Request $request)
     {
-        //
+        $response = cloudinary()->upload($request->file('file')->getRealPath())->getSecurePath();
+
+
+        $validate = Validator::make($request->all(), [
+            'ad_id' => 'required|exists:ads,id',
+        ]);
+        // dd($response);
+        if ($validate->fails()) {
+            return $this->sendErrorResponse('Validation failed.', $validate->errors()->first(), 422);
+        }
+
+        try {
+            $image = Image::create([
+                'ad_id' => $request->ad_id,
+                'url' => $response
+            ]);
+            return $this->sendSuccessResponse($image, 'Image uploaded Successfully', 201);
+        } catch (\Throwable $e) {
+            return $this->sendErrorResponse('An error occurred while creating the category.', $e->getMessage(), 500);
+        }
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Delete resource in storage.
      */
-    public function create()
+    public function deleteImage($id)
     {
-        //
-    }
+        try {
+            // Find the ad and check ownership
+            $image = Image::where('id', $id)->first();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreImageRequest $request)
-    {
-        //
-    }
+            if (!$image) {
+                return  $this->sendErrorResponse('Image not found', [], 404);
+            }
+            $imageUrl = $image->url;
+            // Remove the Cloudinary base URL and version
+            $publicIdWithExtension = preg_replace('/^.*\/upload\/v\d+\//', '', $imageUrl);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Image $image)
-    {
-        //
-    }
+            // Remove the file extension to get the public ID
+            $publicId = pathinfo($publicIdWithExtension, PATHINFO_FILENAME);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Image $image)
-    {
-        //
-    }
+            $deleteCloudImage = cloudinary()->uploadApi()->destroy($publicId);
+            if ($deleteCloudImage['result'] !== 'ok') {
+                return  $this->sendErrorResponse('Error deleting image from cloude', [], 404);
+            }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateImageRequest $request, Image $image)
-    {
-        //
-    }
+            // Delete the Image$image
+            $image->delete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Image $image)
-    {
-        //
+            return $this->sendSuccessResponse('', 'Image Deleted Successfully', 200);
+        } catch (\Exception $e) {
+            return $this->sendErrorResponse('An error occurred while deleting the ad.', $e->getMessage(), 500);
+        }
     }
 }

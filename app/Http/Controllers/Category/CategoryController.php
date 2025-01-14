@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Category;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
@@ -16,7 +17,7 @@ class CategoryController extends Controller
     public function showAllCategory()
     {
         try {
-            $category = Category::all()->orderBy('name', 'asc')->get();
+            $category = Category::orderBy('name', 'asc')->get();
             return $this->sendSuccessResponse($category, "Fetch all category", 200);
         } catch (\Throwable $e) {
             return $this->sendErrorResponse("An error fetching list of category", $e->getMessage(), 500);
