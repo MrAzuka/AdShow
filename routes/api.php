@@ -4,6 +4,7 @@ use App\Http\Controllers\Ads\AdsController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Category\CategoryController;
 use App\Http\Controllers\Image\ImageController;
+use App\Http\Controllers\Review\ReviewController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -44,4 +45,10 @@ Route::middleware(['auth:sanctum'])->prefix('v1/category')->group(function () {
 Route::middleware(['auth:sanctum'])->prefix('v1/image')->group(function () {
     Route::post('/', [ImageController::class, 'createImage']);
     Route::delete('/{id}', [ImageController::class, 'deleteImage']);
+});
+
+Route::middleware(['auth:sanctum'])->prefix('v1/review')->group(function () {
+    Route::get('/{id}', [ReviewController::class, 'getAdReview']);
+    Route::post('/{id}', [ReviewController::class, 'createReview']);
+    Route::put('/{id}', [ReviewController::class, 'updateReview']);
 });

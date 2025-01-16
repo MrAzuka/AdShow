@@ -13,21 +13,16 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('reviewer_id'); 
-            $table->unsignedBigInteger('reviewee_id');
-            $table->foreignId('ad_id')->constrained()->onDelete('cascade'); 
+            $table->unsignedBigInteger('reviewer_id');
+            $table->foreignId('ad_id')->constrained()->onDelete('cascade');
             $table->longText('comment');
             $table->integer('rating');
             $table->timestamps();
 
             // Define foreign key constraints
             $table->foreign('reviewer_id')
-                  ->references('id')->on('users')
-                  ->onDelete('cascade'); 
-
-            $table->foreign('reviewee_id')
-                  ->references('id')->on('users')
-                  ->onDelete('cascade');
+                ->references('id')->on('users')
+                ->onDelete('cascade');
         });
     }
 
